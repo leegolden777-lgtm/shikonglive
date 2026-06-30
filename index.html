@@ -291,6 +291,38 @@
   .modal .modal-btns .btn-cancel { background: rgba(255,255,255,0.05); color: #8A8378; }
   .modal .modal-btns .btn-confirm { background: #993C1D; color: #fff; }
 
+  /* ===== Toast 提示弹窗 ===== */
+  .toast-container {
+    position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+    z-index: 300; display: flex; flex-direction: column; gap: 10px;
+    pointer-events: none;
+  }
+  .toast {
+    background: rgba(37, 36, 34, 0.96);
+    border: 1px solid #3A3835;
+    border-radius: 12px;
+    padding: 14px 24px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; color: #E8E2D5;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    opacity: 0; transform: translateY(-16px);
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: auto;
+    min-width: 220px; max-width: 90vw;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast-icon {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+  }
+  .toast-success .toast-icon { background: rgba(123, 174, 127, 0.15); color: #7BAE7F; }
+  .toast-error .toast-icon { background: rgba(212, 106, 74, 0.15); color: #D46A4A; }
+  .toast-warning .toast-icon { background: rgba(212, 168, 75, 0.15); color: #D4A84B; }
+  .toast-info .toast-icon { background: rgba(138, 180, 200, 0.15); color: #8AB4C8; }
+
   /* ===== 结局页 ===== */
   .ending-page {
     min-height: 100vh; display: flex; align-items: center; justify-content: center;
@@ -1279,7 +1311,7 @@ function fillExample(el) {
 async function parseUserInput() {
   const input = document.getElementById('createInput').value.trim();
   if (!input) {
-    alert('请先输入一句话描述');
+    showToast('请先输入一句话描述', 'warning');
     return;
   }
 
@@ -1808,7 +1840,7 @@ async function generateFullStory() {
     addNewRoom(story);
     document.getElementById('createGenerating').classList.remove('active');
     showPage('page-home');
-    alert('直播间创建成功！');
+    showToast('直播间创建成功！', 'success');
 
   } catch (e) {
     console.error('管线执行失败:', e);
@@ -1826,7 +1858,7 @@ async function generateFullStory() {
     addNewRoom(story);
     document.getElementById('createGenerating').classList.remove('active');
     showPage('page-home');
-    alert('直播间创建成功！（本地模板）');
+    showToast('直播间创建成功！（本地模板）', 'success');
   }
 }
 
@@ -1910,9 +1942,26 @@ function addNewRoom(story) {
   }
 }
 
+// ===== Toast 提示弹窗 =====
+function showToast(message, type) {
+  type = type || 'info';
+  const icons = { success: '✓', error: '✕', warning: '!', info: 'ℹ' };
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = 'toast toast-' + type;
+  toast.innerHTML = '<span class="toast-icon">' + (icons[type] || icons.info) + '</span><span>' + message + '</span>';
+  container.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('show'));
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 350);
+  }, 2500);
+}
+
 // 进入自定义直播间
 function enterCustomRoom(story) {
-  if (!story) { console.error('enterCustomRoom: story is null'); alert('故事数据为空'); return; }
+  if (!story) { console.error('enterCustomRoom: story is null'); showToast('故事数据为空', 'error'); return; }
   // 安全检查：补全缺失字段
   if (!story.meta) story.meta = {};
   if (!story.meta.title) story.meta.title = '未命名直播间';
@@ -1951,6 +2000,12 @@ function enterCustomRoom(story) {
     live: { text: story.ending.live.title + '\n\n' + story.ending.live.text, image: null }
   };
 
+  // 构建日期映射（从 story.days 的 date_label 提取）
+  const dates = {};
+  story.days.forEach((day, idx) => {
+    dates[idx + 1] = day.date_label || '';
+  });
+
   // 判断故事类型（必须先于 character 构建）
   const storyType = (story._eventType === 'joy' || story.meta.subtitle && /婚|喜|丰收|团圆|中举|及第|金榜|凯旋|庆典|过年|春节|出生|诞生|新生|满月|周岁|期待|迎接|庆祝|升学|开业|乔迁|生日|聚会|旅行|毕业|入职|搬家|重逢/.test(story.meta.subtitle)) ? 'joy' : 'disaster';
 
@@ -1971,7 +2026,8 @@ function enterCustomRoom(story) {
     mission: char.mission,
     missionDaysTotal: 5,
     eventPool: eventPool,
-    endings: endingData
+    endings: endingData,
+    dates: dates
   };
 
   // 重置游戏状态
@@ -2371,7 +2427,7 @@ function closeLetterModal(e) { if (!e || e.target.id === 'letterModal') document
 
 function submitLetter() {
   const content = document.getElementById('letterContent').value.trim();
-  if (!content) { alert('写点什么吧'); return; }
+  if (!content) { showToast('写点什么吧', 'warning'); return; }
   const dateStr = getDateByDay(gameState.currentDay);
   const letterEvent = {
     type: 'letter', title: '写了一封家书', content: content,
@@ -2474,12 +2530,12 @@ function doLike() {
   setTimeout(() => btn.style.color = '', 500);
 }
 function doShare() {
-  alert('已复制直播间链接到剪贴板！');
+  showToast('已复制直播间链接到剪贴板！', 'success');
 }
 function doComment() {
   commentCount++;
   document.getElementById('commentCount').textContent = commentCount;
-  alert('评论功能即将上线，敬请期待！');
+  showToast('评论功能即将上线，敬请期待！', 'info');
 }
 function doCollect() {
   isCollected = !isCollected;
@@ -2487,5 +2543,8 @@ function doCollect() {
   btn.innerHTML = isCollected ? '⭐ <span style=\'color:#E8A838\'>已收藏</span>' : '⭐ 收藏';
 }
 </script>
+<!-- Toast 提示容器 -->
+<div class="toast-container" id="toastContainer"></div>
+
 </body>
 </html>
