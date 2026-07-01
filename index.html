@@ -13,7 +13,7 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-  .page { display: none; padding-bottom: 80px; }
+  .page { display: none; padding-bottom: 180px; }
   .page.active { display: block; }
 
   /* ===== 顶部导航 ===== */
@@ -204,37 +204,11 @@
   .event-card p { font-size: 14px; color: #C4B8A5; line-height: 1.7; }
   .event-card .date { font-size: 12px; color: #5A5550; margin-top: 10px; text-align: right; }
 
-  /* ===== 底部操作栏 ===== */
-  .action-bar {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: #1E1D1B;
-    border-top: 1px solid #3A3835;
-    padding: 10px 16px;
-    display: flex; align-items: center; gap: 10px;
-    z-index: 50;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom));
-  }
-  .action-bar button {
-    padding: 10px 16px; border-radius: 8px; border: none;
-    font-size: 14px; cursor: pointer; transition: all 0.2s;
-    font-family: inherit;
-  }
-  .action-bar .btn-primary {
-    background: linear-gradient(135deg, #993C1D, #7A3017);
-    color: #fff; flex: 1;
-  }
-  .action-bar .btn-primary:hover { opacity: 0.9; }
-  .action-bar .btn-ghost {
-    background: rgba(255,255,255,0.05); color: #C4B8A5;
-    border: 1px solid #3A3835;
-  }
-  .action-bar .btn-ghost:hover { background: rgba(255,255,255,0.1); }
-
   .tabs {
     position: fixed; bottom: 56px; left: 0; right: 0;
     display: flex; background: #1A1917;
     border-top: 1px solid #3A3835;
-    z-index: 50;
+    z-index: 260;
   }
   .tabs .tab {
     flex: 1; text-align: center; padding: 10px;
@@ -323,10 +297,297 @@
   .toast-warning .toast-icon { background: rgba(212, 168, 75, 0.15); color: #D4A84B; }
   .toast-info .toast-icon { background: rgba(138, 180, 200, 0.15); color: #8AB4C8; }
 
+  /* ===== 幕后面板 ===== */
+  .context-toggle {
+    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: #8A7F72;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid #3A3835;
+    background: transparent;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .context-toggle:hover { color: #B8AFA0; border-color: #5A5550; }
+  .context-toggle .arrow { display: inline-block; transition: transform 0.25s; font-size: 10px; }
+  .context-toggle.open .arrow { transform: rotate(180deg); }
+  .context-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease, margin-top 0.25s ease, opacity 0.25s ease;
+    opacity: 0;
+    margin-top: 0;
+  }
+  .context-panel.open {
+    max-height: 320px;
+    overflow-y: auto;
+    opacity: 1;
+    margin-top: 10px;
+  }
+  .context-section {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    line-height: 1.65;
+  }
+  .ctx-history {
+    background: rgba(212, 168, 75, 0.06);
+    border-left: 2px solid rgba(212, 168, 75, 0.35);
+    color: #C8BFA8;
+  }
+  .ctx-history .ctx-label {
+    font-size: 11px;
+    color: #9A8E7A;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .ctx-parallels {
+    background: rgba(138, 180, 200, 0.05);
+    border-left: 2px solid rgba(138, 180, 200, 0.3);
+    color: #A8B8C8;
+  }
+  .ctx-parallels .ctx-label {
+    font-size: 11px;
+    color: #7A8E9E;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .parallel-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .parallel-item:last-child { margin-bottom: 0; }
+  .parallel-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #2A2825;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+    border: 1px solid #3A3835;
+  }
+  .parallel-info { flex: 1; }
+  .parallel-name { font-weight: 600; color: #C8D0D8; font-size: 12px; }
+  .parallel-role { font-size: 11px; color: #7A8E9E; }
+  .parallel-doing { font-size: 12px; color: #A0AAB4; margin-top: 2px; }
+  .ctx-location {
+    background: rgba(123, 174, 127, 0.05);
+    border-left: 2px solid rgba(123, 174, 127, 0.3);
+    color: #A8C8A8;
+    font-size: 12px;
+  }
+  .ctx-location .ctx-label {
+    font-size: 11px;
+    color: #7A9E7A;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  /* 自定义滚动条 */
+  .context-panel::-webkit-scrollbar { width: 3px; }
+  .context-panel::-webkit-scrollbar-track { background: transparent; }
+  .context-panel::-webkit-scrollbar-thumb { background: #3A3835; border-radius: 3px; }
+
+  /* ===== 底部导航栏 ===== */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 56px;
+    background: rgba(26, 25, 23, 0.96);
+    border-top: 1px solid #2A2825;
+    display: flex; align-items: center; justify-content: space-around;
+    z-index: 250;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .bottom-nav .nav-item {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: #5A5550;
+    transition: color 0.2s;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    font-size: 14px;
+    letter-spacing: 1px;
+    height: 100%;
+  }
+  .bottom-nav .nav-item.active { color: #D4A84B; }
+  .bottom-nav .nav-item .nav-label {
+    font-size: 14px;
+  }
+  .nav-plus {
+    color: #D4A84B !important;
+    font-size: 24px !important;
+    font-weight: 300;
+  }
+
+  /* ===== 封面页（抖音风全屏背景图） ===== */
+  #page-cover {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: #0a0a0a;
+    z-index: 200;
+    display: none;
+  }
+  #page-cover.active { display: flex; }
+  .cover-slide {
+    position: relative; width: 100%; height: 100%;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .cover-fullimg {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+  .cover-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 2;
+    background: linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.65) 80%, rgba(0,0,0,0.85) 100%);
+  }
+  .cover-content {
+    position: absolute; bottom: 100px; left: 20px; right: 60px;
+    z-index: 3;
+  }
+  .cover-tag {
+    display: inline-block;
+    background: rgba(212,168,75,0.2); color: #D4A84B;
+    font-size: 11px; padding: 3px 10px; border-radius: 4px;
+    letter-spacing: 1px; margin-bottom: 10px;
+    border: 1px solid rgba(212,168,75,0.3);
+  }
+  .cover-title {
+    font-size: 26px; font-weight: 700; color: #fff;
+    margin-bottom: 8px; line-height: 1.3;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .cover-subtitle {
+    font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.6;
+    margin-bottom: 16px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+  .cover-hint {
+    font-size: 12px; color: rgba(255,255,255,0.4);
+    animation: pulseHint 2s ease-in-out infinite;
+  }
+  @keyframes pulseHint {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.9; }
+  }
+  .cover-dots {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px; z-index: 3;
+  }
+  .cover-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(255,255,255,0.25); transition: background 0.3s, height 0.3s;
+  }
+  .cover-dot.active {
+    background: #D4A84B; height: 18px; border-radius: 3px;
+  }
+
+  .profile-header { display: none; }
+
+  /* ===== 个人页 ===== */
+  #page-profile {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 10;
+    overflow-y: auto;
+    padding: 20px 16px 72px;
+    display: none;
+    background: #1A1917;
+  }
+  #page-profile.show { display: block; }
+  .profile-header {
+    text-align: center;
+    padding: 20px 0 16px;
+    border-bottom: 1px solid #2A2825;
+    margin-bottom: 16px;
+  }
+  .profile-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: #2A2825;
+    border: 2px solid #3A3835;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    margin: 0 auto 8px;
+    color: #D4A84B;
+  }
+  .profile-name { font-size: 16px; color: #E8E2D5; font-weight: 600; }
+  .profile-count { font-size: 12px; color: #5A5550; margin-top: 4px; }
+
+  .profile-story-list {
+    display: flex; flex-direction: column;
+    gap: 10px;
+  }
+  .profile-story-card {
+    background: #2A2825;
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .profile-story-card:active { background: #353230; }
+  .profile-story-card .ps-thumb {
+    width: 48px; height: 48px;
+    border-radius: 8px;
+    background: #353230;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .profile-story-card .ps-info { flex: 1; min-width: 0; }
+  .profile-story-card .ps-title { font-size: 14px; color: #E8E2D5; font-weight: 500; }
+  .profile-story-card .ps-sub { font-size: 12px; color: #5A5550; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .profile-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #5A5550;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  /* 直播全屏容器调整 */
+  #page-character.show, #page-character {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 10;
+    overflow-y: auto;
+    padding-bottom: 72px;
+  }
+  #page-create.show, #page-create {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 10;
+    padding-bottom: 72px;
+    display: none;
+    overflow-y: auto;
+  }
+  .custom-scroll { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
   /* ===== 结局页 ===== */
   .ending-page {
     min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    padding: 40px 20px;
+    padding: 20px 16px 80px;
   }
   .ending-card {
     background: linear-gradient(135deg, #2C2C2A 0%, #252422 100%);
@@ -816,6 +1077,26 @@
     transition: width 0.3s ease;
   }
 
+  /* ===== 竖屏手机适配 ===== */
+  @media (max-height: 700px) {
+    .cover-content { bottom: 80px; left: 16px; right: 50px; }
+    .cover-title { font-size: 22px; }
+    .cover-subtitle { font-size: 12px; margin-bottom: 12px; }
+    .cover-hint { font-size: 11px; }
+    .ending-card { padding: 28px 20px; }
+    .ending-card .fate-icon { font-size: 36px; }
+    .ending-card h2 { font-size: 18px; }
+    .ending-card .story { font-size: 13px; }
+    .ending-card .reveal .event-name { font-size: 16px; }
+    .ending-card .reveal .quote { font-size: 12px; }
+  }
+  @media (max-width: 360px) {
+    .cover-content { bottom: 80px; left: 14px; right: 44px; }
+    .cover-title { font-size: 20px; }
+    .cover-subtitle { font-size: 11px; }
+    .ending-card { padding: 24px 16px; border-radius: 16px; }
+    .ending-card h2 { font-size: 16px; }
+  }
   </style>
 </head>
 <body>
@@ -823,12 +1104,26 @@
 <!-- 屏幕闪红光层 -->
 <div class="screen-flash" id="screenFlash"></div>
 
-<!-- ========== 首页 ========== -->
+<!-- ========== 故事封面页（默认入口） ========== -->
+<div class="page active" id="page-cover">
+  <div class="cover-slide" id="coverSlide" onclick="enterStory()">
+    <img class="cover-fullimg" id="coverImg" src="" alt="">
+    <div class="cover-overlay"></div>
+    <div class="cover-content">
+      <span class="cover-tag" id="coverTag"></span>
+      <div class="cover-title" id="coverTitle">加载中...</div>
+      <div class="cover-subtitle" id="coverSubtitle"></div>
+      <div class="cover-hint">点击进入直播间 ↓</div>
+    </div>
+    <div class="cover-dots" id="coverDots"></div>
+  </div>
+</div>
+
 <!-- ========== 创建直播间 ========== -->
 <div class="page" id="page-create">
   <div class="create-page">
     <div class="create-header">
-      <span class="create-back" onclick="showPage('page-home')">← 返回</span>
+      <span class="create-back" onclick="switchTab('home')">← 返回</span>
       <div class="create-title">创建直播间</div>
     </div>
 
@@ -906,7 +1201,7 @@
   </div>
 </div>
 
-<div class="page active" id="page-home">
+<div class="page" id="page-home" style="display:none">
   <div class="home-grid">
     <div class="room-card" onclick="enterRoom()">
       <div class="card-img-wrap">
@@ -948,7 +1243,7 @@
 <!-- ========== 直播间入口 ========== -->
 <div class="page" id="page-room">
   <div class="top-bar">
-    <span class="back-btn" onclick="showPage('page-home')">← 返回</span>
+    <span class="back-btn" onclick="switchTab('home')">← 返回</span>
     <h1>失控直播</h1><span></span>
   </div>
   <div class="room-intro">
@@ -1007,7 +1302,7 @@
 <div class="page" id="page-character" style="display:none;">
   <!-- 角色信息头部 -->
   <div style="display:flex;align-items:center;padding:12px 16px;background:#1A1917;border-bottom:1px solid #3A3835;gap:12px;">
-    <span id="charBackBtn" onclick="restart()" style="font-size:14px;cursor:pointer;color:#9A9590;padding:4px;display:flex;align-items:center;gap:4px;">← 返回</span>
+    <span id="charBackBtn" onclick="goBackToCover()" style="font-size:14px;cursor:pointer;color:#9A9590;padding:4px;display:flex;align-items:center;gap:4px;">← 返回</span>
     <div style="flex:1;font-size:16px;font-weight:700;color:#E8E2D5;">失控直播</div>
   </div>
   <div class="char-header">
@@ -1046,25 +1341,11 @@
     <img id="lightboxImg" src="" alt="">
   </div>
   <!-- 全屏场景冲击力展示 -->
-  <div id="sceneOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:100;background:#0F0E0D;align-items:center;justify-content:center;flex-direction:column;padding:20px;">
+  <div id="sceneOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:270;background:#0F0E0D;align-items:center;justify-content:center;flex-direction:column;padding:20px;">
     <img id="sceneOverlayImg" src="" style="max-width:100%;max-height:65vh;object-fit:contain;border-radius:12px;margin-bottom:24px;box-shadow:0 0 40px rgba(153,60,29,0.3);">
     <div id="sceneOverlayText" style="color:#C4B8A5;font-size:16px;text-align:center;line-height:1.8;"></div>
   </div>
 
-  <!-- Tab栏已移除 -->
-
-  <!-- 互动按钮栏 -->
-  <div style="position:fixed;bottom:56px;left:0;right:0;background:#1E1D1B;border-top:1px solid #3A3835;padding:8px 16px;display:flex;align-items:center;justify-content:space-around;z-index:50;">
-    <span onclick="doLike()" id="likeBtn" style="font-size:13px;color:#C4B8A5;cursor:pointer;display:flex;align-items:center;gap:4px;">❤️ <span id="likeCount">128</span></span>
-    <span onclick="doShare()" style="font-size:13px;color:#C4B8A5;cursor:pointer;display:flex;align-items:center;gap:4px;">↗️ 转发</span>
-    <span onclick="doComment()" style="font-size:13px;color:#C4B8A5;cursor:pointer;display:flex;align-items:center;gap:4px;">💬 <span id="commentCount">32</span></span>
-    <span onclick="doCollect()" id="collectBtn" style="font-size:13px;color:#C4B8A5;cursor:pointer;display:flex;align-items:center;gap:4px;">⭐ 收藏</span>
-  </div>
-
-  <!-- 操作栏 -->
-  <div class="action-bar" style="bottom:0;">
-    <button class="btn-primary" onclick="advanceDay()" id="advanceBtn" style="width:100%;">▶ 快进一天</button>
-  </div>
 </div>
 
 </div>
@@ -1125,28 +1406,42 @@ let character = {
       { type: 'chat', title: '小翠来买饼', content: '对面茶楼的小翠来买饼，说今天茶楼客人少，老板让她提前收工。我多给了她一个饼，她笑了，说"阿三哥你真好"。', image: 'images/img_013.jpg' }
     ],
     2: [
-      { type: 'event', title: '米价涨了', content: '早上去进货，米贩子说米价涨了两文。我问为什么，他说"北边不太平"。我没当回事，不太平跟咱卖饼的有什么关系。', image: 'images/img_014.jpg' },
+      { type: 'event', title: '米价涨了', content: '早上去进货，米贩子说米价涨了两文。我问为什么，他说"北边不太平"。我没当回事，不太平跟咱卖饼的有什么关系。', image: 'images/img_014.jpg',
+        context: { history: '天宝十四载十一月初，安禄山已在范阳秘密集结十五万兵马。长安城中尚不知情，唯有零星的边报流入鸿胪寺。', location: '长安城西市 · 米铺街口', parallels: [{ name: '唐玄宗', role: '大唐天子', doing: '在华清宫与杨贵妃赏花，对边报一笑置之' }, { name: '杨国忠', role: '右相', doing: '在府中连夜写弹劾安禄山的奏折，准备明日进谏' }] }
+      },
       { type: 'action', title: '写家书', content: '给妹妹写了一封信，说再过五天就可以把钱托镖局带回去。让她别着急，嫁妆一定置办得体面。写到最后加了一句："哥想回家看看。"', image: 'images/img_015.jpg' },
-      { type: 'chat', title: '客人的议论', content: '一个穿绸衫的客人吃饼的时候跟同伴说："范阳那边可能要出事。"同伴说"不可能，谁敢反？"绸衫客人没再说话，只是摇了摇头。', image: 'images/img_016.jpg' },
+      { type: 'chat', title: '客人的议论', content: '一个穿绸衫的客人吃饼的时候跟同伴说："范阳那边可能要出事。"同伴说"不可能，谁敢反？"绸衫客人没再说话，只是摇了摇头。', image: 'images/img_016.jpg',
+        context: { history: '同一日，安禄山亲兵已封锁范阳四门，以"校阅"为名集结大军。驿站虽已截获异常军报，但被安禄山派出的亲信在半路拦截。', location: '长安城西市 · 阿三饼摊', parallels: [{ name: '安禄山', role: '范阳节度使', doing: '在范阳大摆宴席，席间暗藏甲兵，召诸将歃血为盟' }, { name: '哥舒翰', role: '潼关守将', doing: '在潼关收到"范阳不稳"的密报，但苦无确凿证据，不敢轻报朝廷' }] }
+      },
       { type: 'thought', title: '烤炉的温度', content: '今天的烤炉特别热。我站在炉子后面，汗顺着额头往下淌。看着面团在炉子里慢慢鼓起、变黄、散发出芝麻香，突然觉得，这就是日子。', image: 'images/img_017.jpg' }
     ],
     3: [
-      { type: 'event', title: '西市闭市提前', content: '今天西市闭市比平时早了一个时辰。衙役说是"有贵人要过"。我收摊的时候看到一队军马从街上过去，马蹄声很急。', image: 'images/img_018.jpg' },
+      { type: 'event', title: '西市闭市提前', content: '今天西市闭市比平时早了一个时辰。衙役说是"有贵人要过"。我收摊的时候看到一队军马从街上过去，马蹄声很急。', image: 'images/img_018.jpg',
+        context: { history: '安禄山叛乱的奏报终于送达长安。杨国忠力劝玄宗出兵镇压，但朝中仍有大臣认为安禄山不敢真反。朝堂上主战主和吵成一团。', location: '长安城西市 · 街道', parallels: [{ name: '唐玄宗', role: '大唐天子', doing: '从华清宫回到兴庆宫，对"安禄山反了"半信半疑，命人再查' }, { name: '杨国忠', role: '右相', doing: '在朝堂上痛斥安禄山谋反，被其他大臣嘲笑是杞人忧天' }] }
+      },
       { type: 'thought', title: '心里发慌', content: '收摊后心里有点慌。赵掌柜南迁了，米价涨了，军马在街上来回跑。这些以前都没有过。我把钱袋又数了一遍，还是十七贯三百文。', image: 'images/img_019.jpg' },
-      { type: 'chat', title: '小翠的消息', content: '小翠说茶楼老板也在收拾东西，说如果北边真的出事，就先回江南老家。我问她"你呢"，她说"我能去哪"。我没接话，把刚出炉最热的那个饼塞给她。', image: 'images/img_020.jpg' },
+      { type: 'chat', title: '小翠的消息', content: '小翠说茶楼老板也在收拾东西，说如果北边真的出事，就先回江南老家。我问她"你呢"，她说"我能去哪"。我没接话，把刚出炉最热的那个饼塞给她。', image: 'images/img_020.jpg',
+        context: { history: '洛阳以东驿站已出现逃难人流。河北二十四郡在叛军铁蹄下几乎未做抵抗便望风而降，消息正沿着官道向西传递。', location: '长安城西市 · 茶楼门前', parallels: [{ name: '哥舒翰', role: '潼关守将', doing: '奉命率二十万大军出潼关，在灵宝一线布防，但粮草补给尚未到位' }, { name: '杨国忠', role: '右相', doing: '在府中销毁与安禄山多年的往来书信，以防被人翻出旧账' }] }
+      },
       { type: 'action', title: '在饼炉上刻字', content: '晚上收摊后，我用小刀在饼炉的木框上刻了一个字："稳"。不是不稳，是告诉自己要稳。还有三天，三天后就去钱庄。', image: 'images/img_021.jpg' }
     ],
     4: [
-      { type: 'event', title: '买不到了', content: '早上去进货，米贩子没出摊。隔壁说昨天夜里有人把米店抢空了。我慌了——没有面，我怎么烤饼？', image: 'images/img_022.jpg' },
+      { type: 'event', title: '买不到了', content: '早上去进货，米贩子没出摊。隔壁说昨天夜里有人把米店抢空了。我慌了——没有面，我怎么烤饼？', image: 'images/img_022.jpg',
+        context: { history: '安禄山叛军已攻占灵昌、陈留两郡，前锋直指洛阳。河南各地守军望风而逃，长安城内人心惶惶，大批官员家眷开始南逃。', location: '长安城西市 · 采购街', parallels: [{ name: '唐玄宗', role: '大唐天子', doing: '终于确认安禄山已反，摔了酒杯，连夜召集大臣商议对策' }, { name: '哥舒翰', role: '潼关守将', doing: '二十万大军驻守灵宝，部将建议主动出击，但哥舒翰坚持守关待敌' }] }
+      },
       { type: 'thought', title: '逃难的人群', content: '下午看到有人背着包袱往南走。一家老小，男的挑着担子，女的抱着孩子。他们脸上没有表情，就是走。我问一个老头"去哪"，他说"南边走"。', image: 'images/img_023.jpg' },
       { type: 'chat', title: '最后一批客人', content: '今天只卖出去了五个饼。最后一个是小翠，她说茶楼明天不开了。她把钱塞给我，我没要。她说"阿三哥，你也走吧"。我说"再等等，还有两天"。', image: 'images/img_024.jpg' },
       { type: 'event', title: '将官的马', content: '傍晚的时候一队将官骑马从西市经过，马蹄踏翻了隔壁茶摊的桌子。卖茶的想去理论，被士兵推了一把，摔在地上。没人敢扶他。', image: 'images/img_025.jpg' }
     ],
     5: [
-      { type: 'war', title: '消息传来', content: '安禄山起兵了。消息是早上传来的，整个西市都炸了。有人在哭，有人在跑，有人在收拾东西。我站在摊位前面，手里还拿着没揉完的面。', image: 'images/img_001.jpg' },
+      { type: 'war', title: '消息传来', content: '安禄山起兵了。消息是早上传来的，整个西市都炸了。有人在哭，有人在跑，有人在收拾东西。我站在摊位前面，手里还拿着没揉完的面。', image: 'images/img_001.jpg',
+        context: { history: '天宝十四载十一月初九，安禄山于范阳正式起兵，以"奉密诏讨杨国忠"为名，率十五万大军南下。同日，叛军前锋渡过黄河，直逼洛阳。', location: '长安城西市 · 阿三饼摊', parallels: [{ name: '唐玄宗', role: '大唐天子', doing: '在朝堂上痛哭，悔不听忠言，下令封安禄山部将高仙芝为帅，率军东征' }, { name: '哥舒翰', role: '潼关守将', doing: '在潼关加紧布防，预感一场大战即将来临' }] }
+      },
       { type: 'war', title: '钱庄关门', content: '我跑到钱庄，门已经关了。里面的人说"取不了了，什么时候开不知道"。十七贯三百文，就在那里，我看得见，取不出来。', image: 'images/img_001.jpg' },
       { type: 'war', title: '小翠不见了', content: '跑到对面茶楼，门锁着。小翠不在。门口的地上有一个饼，是我昨天给她的那个，已经被人踩扁了。', image: 'images/img_001.jpg' },
-      { type: 'war', title: '跟着人群', content: '我也开始往南走。钱袋挂在腰上，里面只有今天卖饼的几十文。人群推着我走，我不认识路，就是跟着。有人摔倒了，后面的人直接踩过去。', image: 'images/img_001.jpg' }
+      { type: 'war', title: '跟着人群', content: '我也开始往南走。钱袋挂在腰上，里面只有今天卖饼的几十文。人群推着我走，我不认识路，就是跟着。有人摔倒了，后面的人直接踩过去。', image: 'images/img_001.jpg',
+        context: { history: '长安城中已是一片混乱。百官出逃、百姓南迁，通往蜀地的官道上挤满了人。而此时安禄山的大军尚未到达长安，真正的城破还要等到数月之后。', location: '长安城 · 南门外官道', parallels: [{ name: '唐玄宗', role: '大唐天子', doing: '在宫中彻夜未眠，翌日将启程西逃蜀地，马嵬坡已在路上等着他' }, { name: '小翠', role: '茶楼帮工', doing: '已随茶楼老板一家南下，走的是水路，比阿三早走了半日' }] }
+      }
     ]
   },
   reveal: {
@@ -1183,58 +1478,58 @@ const YOUTH_CHARACTER = {
   job: '高中毕业生',
   desc: '齐齐哈尔人，刚参加完2007年高考',
   mission: {
-    target: '和挚友好好聚一场',
+    target: '和兄弟们好好聚一场',
     current: '期待中',
     deadline: '离别来临前'
   },
   missionDaysTotal: 5,
   dates: {
-    1: '2007年夏天 · 聚会前一日',
-    2: '2007年夏天 · 聚会当天 · 上午',
-    3: '2007年夏天 · 聚会当天 · 下午',
-    4: '2007年夏天 · 聚会当天 · 傍晚',
-    5: '2007年夏天 · 离别前夕'
+    1: '2007年8月 · 聚会前一日',
+    2: '2007年8月 · 聚会当天 · 上午',
+    3: '2007年8月 · 聚会当天 · 下午',
+    4: '2007年8月 · 聚会当天 · 傍晚',
+    5: '2007年8月 · 离别前夕'
   },
-  sceneTitle: '2007年夏天 · 齐齐哈尔',
+  sceneTitle: '2007年8月 · 齐齐哈尔',
   sceneSubtitle: '各奔前程',
   eventPool: {
     1: [
-      { type: 'action', title: '去超市采购', content: '和马哥一起去家附近的超市。买了肉、青菜、饮料，还有马哥做肉丸要用的调料。马哥说今天要做拿手的四喜丸子。', image: 'images/img_028.jpg' },
-      { type: 'chat', title: '讨论菜单', content: '广哥打电话来问要不要带点什么。岩哥说他会带一大包零食。马哥在电话那头喊："人来就行，菜我全包了！"', image: '' },
-      { type: 'thought', title: '期待', content: '上一次四个人聚齐还是高考前。那时候每天刷题到深夜，谁也没想到一个月后就要各奔东西。', image: '' },
-      { type: 'event', title: '马哥开始准备', content: '下午去马哥家，他已经把肉剁好了。厨房里弥漫着葱姜的香味。马哥系着围裙，像个专业厨师。', image: '' }
+      { type: 'action', title: '和广哥去买菜', content: '广哥戴着墨镜，顶着圆寸，刚做完近视眼手术还不能见强光。他说："这墨镜戴着跟港片大佬似的。"两人在小区门口的超市买了肉、青菜、饮料，还有几瓶宏宝莱。', image: 'images/youth_01.jpg' },
+      { type: 'chat', title: '讨论菜单', content: '磊哥给岩哥打电话。岩哥说他会带一大包零食和冰镇西瓜。马哥在电话那头喊："人来就行，菜我全包了！晚上我要做锅包肉和地三鲜！"', image: '' },
+      { type: 'thought', title: '期待', content: '上一次四个人聚齐还是高考前。那时候每天刷题到深夜，岩哥给大家讲数学题，马哥负责买夜宵，广哥和磊哥轮流抄笔记。谁也没想到一个月后就要各奔东西。', image: '' },
+      { type: 'event', title: '马哥开始准备', content: '下午去马哥家，他已经把猪肉切好了。马哥是四个人里最高的，穿个背心在厨房里忙活，像个专业大厨。他说："锅包肉必须现炸，地三鲜的茄子得先过油。"', image: '' }
     ],
     2: [
-      { type: 'event', title: '广哥到了', content: '广哥是第一个到的，骑着他那辆旧自行车。一进门就喊："马哥，我先尝尝你的手艺！"', image: 'images/img_029.jpg' },
-      { type: 'event', title: '岩哥带着零食', content: '岩哥拎着一大袋薯片和瓜子进来。"我妈非要我带，说你们年轻人聚会不能光吃菜。"', image: '' },
-      { type: 'action', title: '马哥端出第一道菜', content: '马哥从厨房端出凉拌黄瓜和拍皮蛋。"先垫垫，肉丸还得再炖一会儿。"他的手艺果然没让人失望。', image: '' },
-      { type: 'chat', title: '聊高中趣事', content: '四个人围坐在马哥家的小客厅里，说起初中那次逃课去江边钓鱼。被班主任抓了个正着，罚站了一下午。', image: '' }
+      { type: 'event', title: '广哥到了', content: '广哥是第一个到的，戴着墨镜，顶着硬邦邦的圆寸。一进门就喊："马哥，我先尝尝你的手艺！"磊哥说："你这造型，出门不怕被当成黑社会？"', image: 'images/youth_02.jpg' },
+      { type: 'event', title: '岩哥带着零食', content: '岩哥拎着一大袋薯片和冰镇西瓜进来。他是四个人里肤色最黑的，身材壮实，戴着眼镜。"我妈非要我带，说你们年轻人聚会不能光吃菜。"', image: '' },
+      { type: 'action', title: '马哥端出第一道菜', content: '马哥从厨房端出凉拌黄瓜和酱牛肉。"先垫垫，锅包肉还得再炸一会儿。"他的手艺果然没让人失望。四个人坐在塑料凳子上，围着铺了花桌布的小方桌。', image: '' },
+      { type: 'chat', title: '聊高中趣事', content: '四个人围坐在马哥家的小客厅里，说起高二那次逃课去网吧打《三国战纪》。被班主任抓了个正着，广哥跑得快没被抓，剩下三个罚站了一下午。', image: '' }
     ],
     3: [
-      { type: 'event', title: '肉丸出锅', content: '马哥的四喜丸子终于出锅了。金黄油亮，香气扑鼻。他得意地说："这手艺是我妈真传的。"', image: 'images/img_030.jpg' },
-      { type: 'action', title: '听老罗语录', content: '磊哥从包里掏出MP3，接上小音箱。老罗的声音响彻客厅："彪悍的人生不需要解释。"四个人笑得前仰后合。', image: '' },
-      { type: 'chat', title: '岩哥的计划', content: '岩哥说他报了燕山大学。"学机械，以后想造汽车。"马哥举杯："以后发了财别忘了兄弟们。"', image: '' },
-      { type: 'thought', title: '时光飞逝', content: '听着老罗语录，仿佛回到了初中。那时候四个人挤在一张课桌旁，用一个耳机听同一首歌。', image: '' }
+      { type: 'event', title: '锅包肉出锅', content: '马哥的锅包肉终于出锅了。金黄酥脆，酸甜扑鼻。他得意地说："这手艺是我妈真传的，哈尔滨正宗做法。"岩哥夹了一块，烫得直咧嘴。', image: 'images/youth_03.jpg' },
+      { type: 'action', title: '听老罗语录', content: '磊哥打开马哥家的电脑，连上小音箱。老罗的声音从音箱里炸出来："彪悍的人生不需要解释。"四个人笑得前仰后合。广哥说："当年就是听了老罗的，我才决定去北京。"', image: '' },
+      { type: 'chat', title: '岩哥的计划', content: '岩哥说他报了哈工大。"学机械，以后想造汽车。"他是四个人里学习最好的，高考考了六百多。马哥举杯："以后发了财别忘了兄弟们。"', image: '' },
+      { type: 'thought', title: '时光飞逝', content: '听着老罗语录，仿佛回到了高三晚自习。那时候四个人挤在一张课桌旁，用一副耳机听同一首歌，马哥在草稿纸上画篮球战术。', image: '' }
     ],
     4: [
-      { type: 'action', title: '打开谷歌地图', content: '马哥打开电脑，连上刚装的宽带。四个人第一次用谷歌地图看中国。"原来北京离齐齐哈尔这么远。"广哥说。', image: 'images/img_031.jpg' },
-      { type: 'chat', title: '广哥要去北京', content: '广哥指着屏幕上的北京："我决定了，去北漂。先打工，再找机会。"他的眼神里有一种说不出的坚定。', image: '' },
-      { type: 'chat', title: '马哥的选择', content: '马哥说他会留在齐齐哈尔医学院。"爸妈年纪大了，我不想走太远。"他的声音很平静。', image: '' },
-      { type: 'thought', title: '未来的路', content: '看着地图上四个不同的方向，突然意识到这可能是最后一次四个人整整齐齐聚在一起了。', image: '' }
+      { type: 'action', title: '玩街机模拟器', content: '马哥打开电脑里的街机模拟器，《三国战纪》的画面在液晶显示器上亮起来。四个人轮流操作，马哥手速最快，岩哥策略最好，广哥瞎按也能打出连招。', image: 'images/youth_03.jpg' },
+      { type: 'chat', title: '广哥要去北京', content: '广哥说："我决定了，去北漂。先打工，再找机会。"他戴着墨镜，看不到眼神，但声音很坚定。"近视眼手术都做了，不能白做。"', image: '' },
+      { type: 'chat', title: '马哥的选择', content: '马哥说他会留在齐齐哈尔，去读师范。"爸妈年纪大了，我不想走太远。而且……我也想留在这儿打篮球。"他的声音很平静。', image: '' },
+      { type: 'thought', title: '未来的路', content: '磊哥看着显示器上《三国战纪》的角色选择界面，突然意识到这可能是最后一次四个人整整齐齐聚在一起了。以后有人北上，有人南下，有人留守家乡。', image: '' }
     ],
     5: [
-      { type: 'chat', title: '磊哥的决定', content: '磊哥说想先居家陪父母一段时间。"高考这些年他们太累了。等我缓一缓，再想去哪儿。"', image: 'images/img_032.jpg' },
-      { type: 'action', title: '玩单机游戏', content: '四个人挤在电脑前轮流玩《仙剑奇侠传》。游戏中的江湖聚散，竟和此刻的心情莫名地像。', image: '' },
-      { type: 'event', title: '最后的晚餐', content: '马哥把剩下的菜全热了一遍。没有人提离别，但每一口都吃得格外慢。天色渐渐暗了下来。', image: '' },
-      { type: 'thought', title: '不说再见', content: '临走时，四个人站在马哥家门口。谁也没有说"再见"，只是互相捶了捶肩膀。仿佛明天还会再见面。', image: '' }
+      { type: 'chat', title: '磊哥的决定', content: '磊哥说想先居家陪父母一段时间。"高考这些年他们太累了。而且……我还没想好去哪儿。"他是四个人里最聪明的，但此刻却最迷茫。', image: 'images/youth_04.jpg' },
+      { type: 'action', title: '再打一局', content: '四个人又挤在电脑前打了一局《三国战纪》。游戏中的角色在屏幕上厮杀，现实中的四个人却安静地操作着手柄。没有人说话，但每个人都知道这意味着什么。', image: '' },
+      { type: 'event', title: '最后的晚餐', content: '马哥把剩下的锅包肉和地三鲜全热了一遍。没有人提离别，但每一口都吃得格外慢。窗外的天渐渐暗了下来，齐齐哈尔的夏夜有蝉鸣。', image: '' },
+      { type: 'thought', title: '不说再见', content: '临走时，四个人站在马哥家单元门口。夕阳把四个人的影子拉得很长。谁也没有说"再见"，只是互相捶了捶肩膀。广哥的墨镜在夕阳下反着光，看不清表情。', image: '' }
     ]
   },
   reveal: {
     title: '你刚刚经历的是',
-    eventName: '2007年夏天 · 齐齐哈尔',
+    eventName: '2007年8月 · 齐齐哈尔',
     quote: '「青春是一场盛大的聚会，然后各自散场。」',
     source: '——四个人的夏天',
-    impact: '2007年夏天，四个初中挚友在高考结束后重聚。那是他们最后一次整整齐齐地坐在一起。此后有人北上，有人南下，有人留守家乡。时代的大潮中，普通人各自奔赴不同的人生。'
+    impact: '2007年8月，四个高中挚友在高考结束后重聚于齐齐哈尔的一间普通公寓。那是他们最后一次整整齐齐地坐在一起。广哥北上，岩哥南下求学，马哥留守家乡，磊哥迷茫中前行。时代的大潮中，普通人各自奔赴不同的人生。'
   },
   endings: {
     live: {
@@ -1242,7 +1537,7 @@ const YOUTH_CHARACTER = {
       icon: '✦',
       cardClass: 'live',
       title: '多年后，他们又坐在了同一张桌子旁',
-      story: '十年后的夏天，四个人在马哥家重逢。马哥成了医院的骨干，岩哥真的造了汽车，广哥在北京站稳了脚跟，磊哥也找到了自己的路。每年夏天，他们都会回齐齐哈尔聚一次。马哥的四喜丸子，依然是那个味道。',
+      story: '十年后的夏天，四个人在马哥家重逢。马哥成了体育老师，岩哥真的进了汽车厂，广哥在北京开了一家小公司，磊哥也找到了自己的路。每年夏天，他们都会回齐齐哈尔聚一次。马哥的锅包肉，依然是那个味道。',
       image: ''
     },
     die: {
@@ -1250,7 +1545,7 @@ const YOUTH_CHARACTER = {
       icon: '✦',
       cardClass: 'die',
       title: '他们再也没有那样聚过',
-      story: '那次聚会之后，四个人各自奔向了不同的城市。忙于工作、家庭，联系渐渐少了。偶尔在QQ群里寒暄几句，却再也找不到当年围坐在一起的感觉。但每个人都知道，那个夏天的晚上，是他们青春里最亮的一盏灯。',
+      story: '那次聚会之后，四个人各自奔向了不同的城市。忙于工作、家庭，联系渐渐少了。QQ群早已沉寂，头像一个个变成灰色。但每个人都知道，那个夏夜的晚上，老罗语录的声音、锅包肉的香味、还有四个人挤在电脑前的笑声，是他们青春里最亮的一盏灯。',
       image: ''
     },
     random: {
@@ -1258,7 +1553,7 @@ const YOUTH_CHARACTER = {
       icon: '✦',
       cardClass: 'live',
       title: '人生很长，故事还在继续',
-      story: '那次聚会后，四个人的人生轨迹各不相同。有人顺利，有人坎坷，有人在中途改变了方向。但每当夏天来临，每当听到老罗语录，每当闻到四喜丸子的香味，他们都会想起那个晚上。那是属于他们的，独一无二的青春。',
+      story: '那次聚会后，四个人的人生轨迹各不相同。有人顺利，有人坎坷，有人在中途改变了方向。但每当夏天来临，每当听到老罗语录的声音，每当闻到锅包肉的香味，他们都会想起那个晚上。那是属于他们的，独一无二的青春。',
       image: ''
     }
   }
@@ -1276,6 +1571,192 @@ let gameState = {
   storyType: 'disaster'
 };
 
+// ===== 故事队列（抖音式竖滑切换） =====
+let storyQueue = [
+  { id: 'original', name: '天宝十四载 · 长安', type: 'preset', color: '#D46A4A', cover: 'images/cover_changan.jpg', tag: '历史' },
+  { id: 'youth', name: '2007年8月 · 齐齐哈尔', type: 'preset', color: '#7BAE7F', cover: 'images/youth_cover.jpg', tag: '青春' }
+];
+let currentStoryIndex = 0;
+let userStories = [];
+let _swipeStartY = 0;
+let _swipeStartTime = 0;
+
+// ===== 故事引擎：每个故事独立状态，支持后台播放 =====
+window.storyEngine = {
+  states: {},   // { storyId: gameState }
+  chars: {},    // { storyId: character }
+  activeId: null
+};
+
+// 从自定义故事构建角色数据
+function buildCustomCharacter(story) {
+  if (!story) return null;
+  if (!story.meta) story.meta = {};
+  if (!story.ending) story.ending = { die: { title: '未能幸免', text: '' }, live: { title: '劫后余生', text: '' } };
+  if (!story.days || !Array.isArray(story.days)) story.days = [];
+  if (!story.character) story.character = { name: '主角', role: '普通人', mission: {} };
+  if (!story.character.mission) story.character.mission = {};
+
+  const char = story.character;
+  const eventPool = {};
+  story.days.forEach((day, idx) => {
+    eventPool[idx + 1] = (day.events || []).map((ev, eidx) => ({
+      type: ev.type,
+      title: ev.title,
+      content: ev.content,
+      image: ev.image || null,
+      day: idx + 1,
+      time: ev.time_hint || ''
+    }));
+  });
+  const endingData = {
+    die: { text: (story.ending.die && story.ending.die.title) + '\n\n' + (story.ending.die && story.ending.die.text), image: null },
+    live: { text: (story.ending.live && story.ending.live.title) + '\n\n' + (story.ending.live && story.ending.live.text), image: null }
+  };
+  const dates = {};
+  story.days.forEach((day, idx) => { dates[idx + 1] = day.date_label || ''; });
+  const storyType = (story._eventType === 'joy' || story.meta.subtitle && /婚|喜|丰收|团圆|中举|及第|金榜|凯旋|庆典|过年|春节|出生|诞生|新生|满月|周岁|期待|迎接|庆祝|升学|开业|乔迁|生日|聚会|旅行|毕业|入职|搬家|重逢/.test(story.meta.subtitle)) ? 'joy' : 'disaster';
+  char.mission = {
+    target: storyType === 'joy' ? '顺利完成' + (story.meta.subtitle || '这一重要时刻') : '在' + (story.meta.subtitle || '事件中') + '中撑下去',
+    current: storyType === 'joy' ? '一切准备中' : '危机四伏',
+    deadline: storyType === 'joy' ? '大喜之日' : '灾难来临前'
+  };
+  return {
+    id: story.id,
+    name: char.name,
+    role: char.role,
+    avatar: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect fill="%23352e26" width="80" height="80"/><text x="40" y="50" font-size="32" text-anchor="middle" fill="%23E8DCC4">' + char.name.charAt(0) + '</text></svg>',
+    era: story.meta.title,
+    mission: char.mission,
+    missionDaysTotal: 5,
+    eventPool: eventPool,
+    endings: endingData,
+    dates: dates,
+    storyType: storyType,
+    sceneTitle: story.meta.scene_title || story.meta.title,
+    sceneSubtitle: story.meta.scene_subtitle || (storyType === 'joy' ? '庆典' : '兵变')
+  };
+}
+
+// 激活故事：保存当前、恢复/创建目标故事
+function activateStory(storyId, charData) {
+  // 保存当前故事
+  if (window.storyEngine.activeId) {
+    window.storyEngine.states[window.storyEngine.activeId] = gameState;
+    window.storyEngine.chars[window.storyEngine.activeId] = character;
+  }
+  // 恢复或创建
+  if (window.storyEngine.states[storyId]) {
+    gameState = window.storyEngine.states[storyId];
+    character = window.storyEngine.chars[storyId];
+  } else {
+    gameState = {
+      currentDay: 0,
+      events: [],
+      letters: [],
+      fragments: [],
+      currentTab: 'feed',
+      fate: Math.random() > 0.5 ? 'die' : 'live',
+      isPlaying: false,
+      dayPlayed: false,
+      customStory: false,
+      storyType: 'disaster'
+    };
+    if (charData && charData.storyType) {
+      gameState.storyType = charData.storyType;
+    } else if (charData && charData.mission) {
+      const combined = (charData.mission.target || '') + ' ' + (charData.mission.description || '');
+      const joyKeywords = ['出生','诞生','新生','满月','周岁','婚','喜','丰收','团圆','中举','金榜','期待','迎接','庆祝','升学','开业','乔迁','生日','聚会','旅行','毕业','入职','搬家','重逢'];
+      gameState.storyType = joyKeywords.some(k => combined.includes(k)) ? 'joy' : 'disaster';
+    }
+    character = charData;
+    window.storyEngine.states[storyId] = gameState;
+    window.storyEngine.chars[storyId] = character;
+  }
+  window.storyEngine.activeId = storyId;
+
+  // 同步 DOM
+  const c = character || {};
+  const m = c.mission || {};
+  const charAvatarEl = document.getElementById('charAvatar');
+  if (charAvatarEl) charAvatarEl.textContent = c.name ? c.name.charAt(0) : '?';
+  const charNameEl = document.getElementById('charName');
+  if (charNameEl) charNameEl.textContent = c.name || '角色名';
+  const charRoleEl = document.getElementById('charRole');
+  if (charRoleEl) charRoleEl.textContent = c.job || c.role || '身份';
+  const missionTargetEl = document.getElementById('missionTarget');
+  if (missionTargetEl) missionTargetEl.textContent = m.target || '目标';
+  const missionCurrentEl = document.getElementById('missionCurrent');
+  if (missionCurrentEl) missionCurrentEl.textContent = m.current || '未知';
+  const missionDeadlineEl = document.getElementById('missionDeadline');
+  if (missionDeadlineEl) missionDeadlineEl.textContent = m.deadline || '截止日期';
+}
+
+// ===== 故事封面页渲染 =====
+function renderCover() {
+  const story = storyQueue[currentStoryIndex];
+  if (!story) return;
+  document.getElementById('coverTitle').textContent = story.name;
+  const subtitles = {
+    original: '天宝十四载十一月，长安西市。一个卖胡饼的年轻人，想在乱世前攒够二十贯钱，给妹妹买嫁妆。',
+    youth: '2007年夏天，齐齐哈尔。四个初中挚友在高考后重聚，没人知道这是他们最后一次整整齐齐地坐在一起。'
+  };
+  document.getElementById('coverSubtitle').textContent = subtitles[story.id] || (story.type === 'user' ? '自定义故事' : '');
+
+  // 全屏封面图
+  const coverImg = document.getElementById('coverImg');
+  const coverTag = document.getElementById('coverTag');
+  if (story.cover) {
+    coverImg.src = story.cover;
+    coverImg.style.display = 'block';
+  } else {
+    coverImg.style.display = 'none';
+  }
+  coverTag.textContent = story.tag || '';
+  coverTag.style.display = story.tag ? 'inline-block' : 'none';
+
+  // 渲染指示点
+  const dotsEl = document.getElementById('coverDots');
+  dotsEl.innerHTML = storyQueue.map((s, i) =>
+    '<div class="cover-dot' + (i === currentStoryIndex ? ' active' : '') + '"></div>'
+  ).join('');
+}
+
+function enterStory() {
+  const story = storyQueue[currentStoryIndex];
+  if (!story) return;
+
+  let charData;
+  if (story.type === 'preset') {
+    if (story.id === 'original') {
+      charData = JSON.parse(JSON.stringify(ORIGINAL_CHARACTER));
+    } else if (story.id === 'youth') {
+      charData = JSON.parse(JSON.stringify(YOUTH_CHARACTER));
+    }
+  } else if (story.type === 'user') {
+    const userStory = userStories[story.idx];
+    if (userStory) charData = buildCustomCharacter(userStory);
+  }
+
+  if (!charData) return;
+  activateStory(story.id, charData);
+
+  // 显示角色页并渲染当前状态
+  showPage('page-character');
+  renderFeed();
+  updateMissionCountdown();
+
+  // 进入故事后自动开始播放（闭包捕获当前 state/char/storyId）
+  const state = gameState;
+  const char = character;
+  const sid = story.id;
+  setTimeout(function() {
+    if (state.currentDay === 0 && !state.isPlaying) {
+      advanceDayFor(state, char, sid);
+    }
+  }, 800);
+}
+
 const typeLabels = {
   event: '发生的事', action: '做的事', thought: '想的', chat: '对话', letter: '家书', war: '兵变'
 };
@@ -1288,10 +1769,148 @@ function showPage(pageId) {
     p.classList.remove('active');
     p.style.display = '';
   });
-  document.getElementById(pageId).classList.add('active');
+  if (document.getElementById(pageId)) {
+    document.getElementById(pageId).classList.add('active');
+  }
   window.scrollTo(0,0);
 }
 
+// ===== 底部导航栏切换 =====
+function switchTab(tab) {
+  // 更新底部导航高亮
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
+  const navItem = document.querySelector('.bottom-nav .nav-item[data-tab="' + tab + '"]');
+  if (navItem) navItem.classList.add('active');
+
+  // 隐藏所有.page页面（包括结局页、首页等）
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+    if (p.id !== 'page-character' && p.id !== 'page-create' && p.id !== 'page-profile') {
+      p.style.display = '';
+    }
+  });
+  // 隐藏profile
+  document.getElementById('page-profile').classList.remove('show');
+  // 重置 character/create 的内联 display
+  document.getElementById('page-character').style.display = '';
+  document.getElementById('page-create').style.display = '';
+
+  if (tab === 'home') {
+    // 回到故事封面页
+    document.getElementById('page-cover').classList.add('active');
+    document.getElementById('page-cover').style.display = 'flex';
+    document.getElementById('page-character').style.display = 'none';
+    document.getElementById('page-create').style.display = 'none';
+  } else if (tab === 'create') {
+    // 创建页
+    document.getElementById('page-cover').classList.remove('active');
+    document.getElementById('page-cover').style.display = 'none';
+    document.getElementById('page-character').style.display = 'none';
+    document.getElementById('page-create').classList.add('active');
+    document.getElementById('page-create').style.display = 'block';
+    // 重置创建界面
+    document.getElementById('createInputStage').style.display = 'flex';
+    document.getElementById('createLoading').classList.remove('active');
+    document.getElementById('createConfirmStage').classList.remove('active');
+    document.getElementById('createGenerating').classList.remove('active');
+  } else if (tab === 'profile') {
+    // 个人页
+    document.getElementById('page-cover').classList.remove('active');
+    document.getElementById('page-cover').style.display = 'none';
+    document.getElementById('page-character').style.display = 'none';
+    document.getElementById('page-create').style.display = 'none';
+    document.getElementById('page-profile').classList.add('show');
+    renderProfileStories();
+  }
+}
+
+// ===== 个人页渲染 =====
+function renderProfileStories() {
+  const list = document.getElementById('profileStoryList');
+  const countEl = document.getElementById('profileCount');
+  if (!list || !countEl) return;
+
+  if (userStories.length === 0) {
+    list.innerHTML = '<div class="profile-empty">你还没有创建过自定义故事<br>点击底部 <span style="color:#D4A84B;">+</span> 开始创建</div>';
+    countEl.textContent = '暂无已创建的故事';
+    return;
+  }
+
+  countEl.textContent = '共 ' + userStories.length + ' 个故事';
+  list.innerHTML = userStories.map((s, idx) => {
+    const thumb = s.meta && s.meta.title ? s.meta.title.charAt(0) : '?';
+    const sub = s.meta && s.meta.subtitle ? s.meta.subtitle : '';
+    return '<div class="profile-story-card" onclick="loadUserStory(' + idx + ')">' +
+      '<div class="ps-thumb">' + thumb + '</div>' +
+      '<div class="ps-info">' +
+      '<div class="ps-title">' + (s.meta && s.meta.title ? s.meta.title : '未命名') + '</div>' +
+      (sub ? '<div class="ps-sub">' + sub + '</div>' : '') +
+      '</div></div>';
+  }).join('');
+}
+
+function loadUserStory(idx) {
+  if (idx < 0 || idx >= userStories.length) return;
+  const story = userStories[idx];
+  if (!story || !story.character) return;
+  // 切换回首页tab
+  switchTab('home');
+  // 进入自定义故事
+  enterCustomRoom(story);
+  // 添加队列支持
+  if (!storyQueue.find(s => s.id === 'user_' + idx)) {
+    const storyIndex = userStories.length;
+    storyQueue.push({ id: 'user_' + idx, name: story.meta && story.meta.title ? story.meta.title : '自定义故事', type: 'user', idx: storyIndex, color: '#8AB4C8' });
+  }
+  currentStoryIndex = storyQueue.length - 1;
+  // 自动开始
+  setTimeout(() => { if (gameState.currentDay === 0 && !gameState.isPlaying) advanceDay(); }, 500);
+}
+
+// ===== 竖滑手势切换封面 =====
+function initSwipeDetection() {
+  const el = document.getElementById('page-cover');
+  if (!el) return;
+  el.addEventListener('touchstart', function(e) {
+    _swipeStartY = e.touches[0].clientY;
+    _swipeStartTime = Date.now();
+  }, { passive: true });
+  el.addEventListener('touchend', function(e) {
+    const dy = e.changedTouches[0].clientY - _swipeStartY;
+    const dt = Date.now() - _swipeStartTime;
+    // 上滑切换下一个封面
+    if (dy < -60 && (dt < 500 || Math.abs(dy) > 100)) {
+      switchStory('next');
+    }
+    // 下滑切换上一个封面
+    if (dy > 60 && (dt < 500 || Math.abs(dy) > 100)) {
+      switchStory('prev');
+    }
+  }, { passive: true });
+}
+
+function switchStory(direction) {
+  // 仅当封面页可见时才允许竖滑切换
+  const coverEl = document.getElementById('page-cover');
+  if (!coverEl.classList.contains('active')) return;
+  if (direction === 'next') {
+    const nextIdx = currentStoryIndex + 1;
+    if (nextIdx >= storyQueue.length) {
+      showToast('没有更多了', 'info');
+      return;
+    }
+    currentStoryIndex = nextIdx;
+    renderCover();
+  } else if (direction === 'prev') {
+    const prevIdx = currentStoryIndex - 1;
+    if (prevIdx < 0) {
+      showToast('已经是第一个了', 'info');
+      return;
+    }
+    currentStoryIndex = prevIdx;
+    renderCover();
+  }
+}
 
 
 /* ===== 创建直播间 ===== */
@@ -1839,7 +2458,7 @@ async function generateFullStory() {
     await delay(300);
     addNewRoom(story);
     document.getElementById('createGenerating').classList.remove('active');
-    showPage('page-home');
+    switchTab('home');
     showToast('直播间创建成功！', 'success');
 
   } catch (e) {
@@ -1857,7 +2476,7 @@ async function generateFullStory() {
     await delay(300);
     addNewRoom(story);
     document.getElementById('createGenerating').classList.remove('active');
-    showPage('page-home');
+    switchTab('home');
     showToast('直播间创建成功！（本地模板）', 'success');
   }
 }
@@ -1887,59 +2506,19 @@ function enterRoom() { showPage('page-room'); }
 // ============ 管线结束 ============
 // 添加新直播间卡片到首页
 function addNewRoom(story) {
+  // 添加到用户故事列表（个人页展示 + 故事队列）
   if (!window.customStories) window.customStories = [];
   window.customStories.push(story);
 
-  const grid = document.querySelector('.home-grid');
-  const card = document.createElement('div');
-  card.className = 'room-card';
-  card.setAttribute('data-room-id', story.id);
-  card.style.cursor = 'pointer';
-
-  // 用 JS 构建子元素而不是 innerHTML，避免事件丢失
-  const imgWrap = document.createElement('div');
-  imgWrap.className = 'card-img-wrap';
-  const imgPlaceholder = document.createElement('div');
-  imgPlaceholder.style.cssText = 'width:100%;height:100%;background:linear-gradient(135deg,#2a2520 0%,#3A3530 50%,#2a2520 100%);display:flex;align-items:center;justify-content:center;';
-  const iconSpan = document.createElement('span');
-  iconSpan.textContent = '📜';
-  iconSpan.style.cssText = 'font-size:40px;opacity:0.3;';
-  imgPlaceholder.appendChild(iconSpan);
-  imgWrap.appendChild(imgPlaceholder);
-
-  const badge = document.createElement('span');
-  badge.className = 'card-badge active';
-  badge.textContent = '● 直播中';
-  imgWrap.appendChild(badge);
-  card.appendChild(imgWrap);
-
-  const info = document.createElement('div');
-  info.className = 'card-info';
-  const h3 = document.createElement('h3');
-  h3.textContent = story.meta.title || '未命名直播间';
-  info.appendChild(h3);
-  const p = document.createElement('p');
-  p.textContent = (story.meta.protagonist_desc || '') + '。' + (story.meta.event_summary || '') + '。';
-  info.appendChild(p);
-  card.appendChild(info);
-
-  // 点击事件绑定 - 使用 onclick 闭包，移动端更可靠
-  card.onclick = function(e) {
-    if(e) { e.preventDefault(); e.stopPropagation(); }
-    enterCustomRoom(story);
-  };
-  card.addEventListener('touchstart', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    enterCustomRoom(story);
-  }, {passive: false});
-
-  const createCard = grid.querySelector('.room-card.create');
-  if (createCard) {
-    grid.insertBefore(card, createCard);
-  } else {
-    grid.appendChild(card);
-  }
+  const storyIndex = userStories.length;
+  userStories.push(story);
+  const queueId = 'user_' + storyIndex;
+  // 添加到故事队列末端
+  const firstEventImg = story.days && story.days[0] && story.days[0].events && story.days[0].events[0] && story.days[0].events[0].image ? story.days[0].events[0].image : '';
+  storyQueue.push({ id: queueId, name: story.meta && story.meta.title ? story.meta.title : '自定义故事', type: 'user', idx: storyIndex, color: '#8AB4C8', cover: firstEventImg, tag: '自定义' });
+  currentStoryIndex = storyQueue.length - 1;
+  // 回到封面页，展示新创建的故事
+  goBackToCover();
 }
 
 // ===== Toast 提示弹窗 =====
@@ -1962,110 +2541,13 @@ function showToast(message, type) {
 // 进入自定义直播间
 function enterCustomRoom(story) {
   if (!story) { console.error('enterCustomRoom: story is null'); showToast('故事数据为空', 'error'); return; }
-  // 安全检查：补全缺失字段
-  if (!story.meta) story.meta = {};
-  if (!story.meta.title) story.meta.title = '未命名直播间';
-  if (!story.meta.subtitle) story.meta.subtitle = '';
-  if (!story.ending) story.ending = { die: { title: '未能幸免', text: '' }, live: { title: '劫后余生', text: '' } };
-  if (!story.ending.die) story.ending.die = { title: '未能幸免', text: '' };
-  if (!story.ending.live) story.ending.live = { title: '劫后余生', text: '' };
-  if (!story.days || !Array.isArray(story.days)) story.days = [];
-  if (!story.character) story.character = { name: '主角', role: '普通人', mission: {} };
-  if (!story.character.mission) story.character.mission = {};
-
-  console.log('enterCustomRoom called:', story.meta ? story.meta.title : 'unknown');
   window.currentCustomStory = story;
-  const char = story.character;
-
-  // 将自定义故事的事件数据转换为引擎可用的格式
-  // 生成角色头像（用 CSS 渐变占位）
-  const avatarDataUrl = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect fill="%23352e26" width="80" height="80"/><text x="40" y="50" font-size="32" text-anchor="middle" fill="%23E8DCC4">' + char.name.charAt(0) + '</text></svg>';
-
-  // 构建 eventPool（按天数索引）
-  const eventPool = {};
-  story.days.forEach((day, idx) => {
-    eventPool[idx + 1] = day.events.map((ev, eidx) => ({
-      type: ev.type,
-      title: ev.title,
-      content: ev.content,
-      image: null, // 自定义故事暂无配图
-      day: idx + 1,
-      time: ev.time_hint || ''
-    }));
-  });
-
-  // 构建 ending 数据
-  const endingData = {
-    die: { text: story.ending.die.title + '\n\n' + story.ending.die.text, image: null },
-    live: { text: story.ending.live.title + '\n\n' + story.ending.live.text, image: null }
-  };
-
-  // 构建日期映射（从 story.days 的 date_label 提取）
-  const dates = {};
-  story.days.forEach((day, idx) => {
-    dates[idx + 1] = day.date_label || '';
-  });
-
-  // 判断故事类型（必须先于 character 构建）
-  const storyType = (story._eventType === 'joy' || story.meta.subtitle && /婚|喜|丰收|团圆|中举|及第|金榜|凯旋|庆典|过年|春节|出生|诞生|新生|满月|周岁|期待|迎接|庆祝|升学|开业|乔迁|生日|聚会|旅行|毕业|入职|搬家|重逢/.test(story.meta.subtitle)) ? 'joy' : 'disaster';
-
-  // 强制按 storyType 覆盖 mission，不受模板影响
-  char.mission = {
-    target: storyType === 'joy' ? '顺利完成' + (story.meta.subtitle || '这一重要时刻') : '在' + (story.meta.subtitle || '事件中') + '中撑下去',
-    current: storyType === 'joy' ? '一切准备中' : '危机四伏',
-    deadline: storyType === 'joy' ? '大喜之日' : '灾难来临前'
-  };
-
-  // 替换全局 character 对象
-  character = {
-    id: story.id,
-    name: char.name,
-    role: char.role,
-    avatar: avatarDataUrl,
-    era: story.meta.title,
-    mission: char.mission,
-    missionDaysTotal: 5,
-    eventPool: eventPool,
-    endings: endingData,
-    dates: dates
-  };
-
-  // 重置游戏状态
-
-  gameState = {
-    currentDay: 0,
-    events: [],
-    letters: [],
-    fragments: [],
-    currentTab: 'feed',
-    fate: Math.random() > 0.5 ? 'die' : 'live',
-    isPlaying: false,
-    dayPlayed: false,
-    customStory: true,
-    storyType: storyType
-  };
-
-  // 更新角色信息
-  const charAvatarEl = document.getElementById('charAvatar');
-  if (charAvatarEl) charAvatarEl.textContent = char.name.charAt(0);
-  const charNameEl = document.getElementById('charName');
-  if (charNameEl) charNameEl.textContent = char.name;
-  const charRoleEl = document.getElementById('charRole');
-  if (charRoleEl) charRoleEl.textContent = char.role;
-  const missionTargetEl = document.getElementById('missionTarget');
-  if (missionTargetEl) missionTargetEl.textContent = (char.mission && char.mission.target) || '在' + (story.meta.subtitle || '事件中') + '中活下去';
-  const missionCurrentEl = document.getElementById('missionCurrent');
-  if (missionCurrentEl) missionCurrentEl.textContent = (char.mission && char.mission.current) || '尚未脱离危险';
-  const missionDeadlineEl = document.getElementById('missionDeadline');
-  if (missionDeadlineEl) missionDeadlineEl.textContent = (char.mission && char.mission.deadline) || '事件来临前';
+  const charData = buildCustomCharacter(story);
+  if (!charData) { showToast('故事数据解析失败', 'error'); return; }
+  activateStory(story.id, charData);
 
   // 清空 feed
-  document.getElementById('feedList').innerHTML = '<div style="text-align:center;padding:60px 20px;color:#5A5550;font-size:14px;">点击「快进一天」开始跟随' + char.name + '的生活。</div>';
-
-  // 重置按钮
-  const btn = document.getElementById('advanceBtn');
-  btn.textContent = '▶ 快进一天';
-  btn.disabled = false;
+  document.getElementById('feedList').innerHTML = '<div style="text-align:center;padding:60px 20px;color:#5A5550;font-size:14px;">正在跟随 ' + charData.name + ' 的生活...</div>';
 
   // 显示角色页
   showPage('page-character');
@@ -2075,136 +2557,104 @@ function enterCustomRoom(story) {
 
 function enterRoom() { showPage('page-room'); }
 function enterYouthRoom() {
-  character = JSON.parse(JSON.stringify(YOUTH_CHARACTER));
-  gameState = { currentDay: 0, events: [], letters: [], fragments: [], currentTab: 'feed', fate: Math.random() > 0.66 ? 'die' : (Math.random() > 0.5 ? 'live' : 'random'), isPlaying: false, dayPlayed: false, customStory: false };
+  activateStory('youth', JSON.parse(JSON.stringify(YOUTH_CHARACTER)));
   window.currentCustomStory = null;
   document.body.classList.remove('war-mode');
-
-  const charAvatarEl = document.getElementById('charAvatar');
-  if (charAvatarEl) charAvatarEl.textContent = character.name ? character.name.charAt(0) : '?';
-  const charNameEl = document.getElementById('charName');
-  if (charNameEl) charNameEl.textContent = character.name || '角色名';
-  const charRoleEl = document.getElementById('charRole');
-  if (charRoleEl) charRoleEl.textContent = character.job || character.role || '身份';
-  const missionTargetEl = document.getElementById('missionTarget');
-  if (missionTargetEl) missionTargetEl.textContent = (character.mission && character.mission.target) || '目标';
-  const missionCurrentEl = document.getElementById('missionCurrent');
-  if (missionCurrentEl) missionCurrentEl.textContent = (character.mission && character.mission.current) || '未知';
-  const missionDeadlineEl = document.getElementById('missionDeadline');
-  if (missionDeadlineEl) missionDeadlineEl.textContent = (character.mission && character.mission.deadline) || '截止日期';
-
-  document.getElementById('advanceBtn').textContent = '▶ 快进一天';
-  document.getElementById('advanceBtn').disabled = false;
   showPage('page-character');
   renderFeed();
   updateMissionCountdown();
 }
 
 function selectCharacter() {
-  // 恢复原版角色数据（防止被自定义故事污染）
-  character = JSON.parse(JSON.stringify(ORIGINAL_CHARACTER));
-  gameState = { currentDay: 0, events: [], letters: [], fragments: [], currentTab: 'feed', fate: Math.random() > 0.5 ? 'die' : 'live', isPlaying: false, dayPlayed: false, customStory: false };
+  activateStory('original', JSON.parse(JSON.stringify(ORIGINAL_CHARACTER)));
   window.currentCustomStory = null;
   document.body.classList.remove('war-mode');
-
-  // 同步更新角色信息DOM显示
-  const charAvatarEl = document.getElementById('charAvatar');
-  if (charAvatarEl) charAvatarEl.textContent = character.name ? character.name.charAt(0) : '?';
-  const charNameEl = document.getElementById('charName');
-  if (charNameEl) charNameEl.textContent = character.name || '角色名';
-  const charRoleEl = document.getElementById('charRole');
-  if (charRoleEl) charRoleEl.textContent = character.job || character.role || '身份';
-  const missionTargetEl = document.getElementById('missionTarget');
-  if (missionTargetEl) missionTargetEl.textContent = (character.mission && character.mission.target) || '目标';
-  const missionCurrentEl = document.getElementById('missionCurrent');
-  if (missionCurrentEl) missionCurrentEl.textContent = (character.mission && character.mission.current) || '未知';
-  const missionDeadlineEl = document.getElementById('missionDeadline');
-  if (missionDeadlineEl) missionDeadlineEl.textContent = (character.mission && character.mission.deadline) || '截止日期';
-
-  document.getElementById('advanceBtn').textContent = '▶ 快进一天';
-  document.getElementById('advanceBtn').disabled = false;
   showPage('page-character');
   renderFeed();
   updateMissionCountdown();
 }
 
-function advanceDay() {
-  // 清除自动推进定时器
+// 查看结局卡片（添加到 feed 末尾，不自动跳转结局页）
+function addEndingCard(state, storyId) {
+  state.events.unshift({
+    type: 'ending',
+    title: '查看结局',
+    content: '故事已结束，点击查看结局',
+    day: 5,
+    date: getDateByDay(5, state),
+    image: '',
+    id: 'ev_ending_' + storyId
+  });
+  if (window.storyEngine.activeId === storyId) {
+    renderFeed();
+  }
+}
+
+// 核心播放函数：接收 story-specific state/char/storyId，支持后台运行
+function advanceDayFor(state, char, storyId) {
   if (window._autoAdvanceTimer) {
     clearTimeout(window._autoAdvanceTimer);
     window._autoAdvanceTimer = null;
   }
+  if (state.currentDay >= 5) { return; }
+  if (state.isPlaying) return;
+  if (state.currentDay > 5) { state.currentDay = 5; return; }
 
-  if (gameState.currentDay >= 5) { showEnding(); return; }
-  if (gameState.isPlaying) return;
-  if (gameState.currentDay > 5) { gameState.currentDay = 5; return; }
-
-  const btn = document.getElementById('advanceBtn');
-
-  // 如果当天已经播放完毕，进入下一天
-  if (gameState.dayPlayed) {
-    gameState.currentDay++;
-    gameState.dayPlayed = false;
-    if (gameState.currentDay === 5) {
+  if (state.dayPlayed) {
+    state.currentDay++;
+    state.dayPlayed = false;
+    if (state.currentDay === 5 && window.storyEngine.activeId === storyId) {
       triggerWarTransition();
     }
-  } else if (gameState.currentDay === 0) {
-    // 第一天，直接推进
-    gameState.currentDay++;
+  } else if (state.currentDay === 0) {
+    state.currentDay++;
   }
 
-  // 开始播放当天事件
-  playDayEvents();
+  playDayEventsFor(state, char, storyId);
 }
 
-
-function playDayEvents() {
-  const btn = document.getElementById('advanceBtn');
-  const dayEvents = character.eventPool[gameState.currentDay];
+function playDayEventsFor(state, char, storyId) {
+  const dayEvents = char.eventPool[state.currentDay];
   if (!dayEvents || dayEvents.length === 0) {
-    gameState.isPlaying = false;
-    gameState.dayPlayed = true;
-    const btn = document.getElementById('advanceBtn');
-    btn.disabled = false;
-    if (gameState.currentDay >= 5) {
-      btn.textContent = '查看结局';
+    state.isPlaying = false;
+    state.dayPlayed = true;
+    if (state.currentDay >= 5) {
+      setTimeout(() => addEndingCard(state, storyId), 1500);
     } else {
-      btn.textContent = '进入下一天';
+      setTimeout(() => advanceDayFor(state, char, storyId), 1500);
     }
     return;
   }
 
-  gameState.isPlaying = true;
-  btn.textContent = '经历中...';
-  btn.disabled = true;
+  state.isPlaying = true;
 
-  // Day5 全屏场景冲击力展示
-  if (gameState.currentDay === 5) {
-    showSceneOverlay();
+  if (state.currentDay === 5) {
+    if (window.storyEngine.activeId === storyId) {
+      showSceneOverlayFor(char, state);
+    }
     setTimeout(() => {
-      hideSceneOverlay();
-      startEventSequence(dayEvents);
+      if (window.storyEngine.activeId === storyId) hideSceneOverlay();
+      startEventSequenceFor(dayEvents, state, char, storyId);
     }, 2500);
   } else {
-    startEventSequence(dayEvents);
+    startEventSequenceFor(dayEvents, state, char, storyId);
   }
 }
 
-function showSceneOverlay() {
+function showSceneOverlayFor(char, state) {
   const overlay = document.getElementById('sceneOverlay');
   const img = document.getElementById('sceneOverlayImg');
   const txt = document.getElementById('sceneOverlayText');
-  const dayEvents = character.eventPool[gameState.currentDay];
+  const dayEvents = char.eventPool[state.currentDay];
   if (dayEvents && dayEvents[0] && dayEvents[0].image) {
     img.src = dayEvents[0].image;
   }
-  // 使用自定义故事的动态标题，或默认标题
   let sceneTitle = '天宝十四载 · 十一月十四';
   let sceneSubtitle = '兵变';
-  if (character && character.sceneTitle) {
-    sceneTitle = character.sceneTitle;
-    sceneSubtitle = character.sceneSubtitle || sceneSubtitle;
-  } else if (gameState.customStory && window.currentCustomStory && window.currentCustomStory.meta) {
+  if (char && char.sceneTitle) {
+    sceneTitle = char.sceneTitle;
+    sceneSubtitle = char.sceneSubtitle || sceneSubtitle;
+  } else if (state.customStory && window.currentCustomStory && window.currentCustomStory.meta) {
     const meta = window.currentCustomStory.meta;
     sceneTitle = meta.scene_title || meta.title || sceneTitle;
     sceneSubtitle = meta.scene_subtitle || sceneSubtitle;
@@ -2217,45 +2667,64 @@ function hideSceneOverlay() {
   document.getElementById('sceneOverlay').style.display = 'none';
 }
 
-function startEventSequence(dayEvents) {
+function startEventSequenceFor(dayEvents, state, char, storyId) {
   let idx = 0;
   function addNext() {
     if (idx >= dayEvents.length) {
-      // 全部播放完毕
-      gameState.isPlaying = false;
-      gameState.dayPlayed = true;
-      const btn = document.getElementById('advanceBtn');
-      btn.disabled = false;
-      updateMissionCountdown();
-      if (gameState.currentDay >= 5) {
-        btn.textContent = '查看结局';
-      } else {
-        btn.textContent = '跳过 ⏭';
-        // 自动进入下一天（给用户3秒看最后一条）
+      state.isPlaying = false;
+      state.dayPlayed = true;
+      if (window.storyEngine.activeId === storyId) {
+        updateMissionCountdown();
+      }
+      if (state.currentDay >= 5) {
         window._autoAdvanceTimer = setTimeout(() => {
-          if (gameState.dayPlayed && gameState.currentDay < 5) {
-            advanceDay();
+          addEndingCard(state, storyId);
+        }, 4000);
+      } else {
+        window._autoAdvanceTimer = setTimeout(() => {
+          if (state.dayPlayed && state.currentDay < 5) {
+            advanceDayFor(state, char, storyId);
           }
         }, 3000);
       }
       return;
     }
     const ev = dayEvents[idx];
-    const dateStr = getDateByDay(gameState.currentDay);
-    gameState.events.unshift({
+    const dateStr = getDateByDay(state.currentDay, state);
+    state.events.unshift({
       ...ev,
-      day: gameState.currentDay,
+      day: state.currentDay,
       date: dateStr,
       order: idx,
       saved: false,
-      id: 'ev_' + gameState.currentDay + '_' + idx
+      id: 'ev_' + storyId + '_' + state.currentDay + '_' + idx
     });
-    renderFeed();
+    if (window.storyEngine.activeId === storyId) {
+      renderFeed();
+    }
     idx++;
-    const delay = 800 + Math.random() * 700; // 800-1500ms 随机间隔
+    const delay = 800 + Math.random() * 700;
     setTimeout(addNext, delay);
   }
   addNext();
+}
+
+// 保留旧的 advanceDay 作为当前活跃故事的快捷入口
+function advanceDay() {
+  const state = gameState;
+  const char = character;
+  const storyId = window.storyEngine.activeId;
+  if (!storyId) return;
+  advanceDayFor(state, char, storyId);
+}
+
+// 保留旧的 playDayEvents 作为当前活跃故事的快捷入口
+function playDayEvents() {
+  const state = gameState;
+  const char = character;
+  const storyId = window.storyEngine.activeId;
+  if (!storyId) return;
+  playDayEventsFor(state, char, storyId);
 }
 
 function triggerWarTransition() {
@@ -2265,9 +2734,10 @@ function triggerWarTransition() {
   document.body.classList.add('war-mode');
 }
 
-function getDateByDay(day) {
-  if (character && character.dates) {
-    return character.dates[day] || '';
+function getDateByDay(day, state) {
+  const activeChar = state ? window.storyEngine.chars[window.storyEngine.activeId] : character;
+  if (activeChar && activeChar.dates) {
+    return activeChar.dates[day] || '';
   }
   const dates = {
     1: '天宝十四载 · 十一月初十',
@@ -2307,7 +2777,7 @@ function updateMissionCountdown() {
 function renderFeed() {
   const list = document.getElementById('feedList');
   if (gameState.events.length === 0) {
-    list.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#5A5550;font-size:14px;">点击「快进一天」开始跟随' + (character && character.name ? character.name : '主角') + '的生活。</div>';
+    list.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#5A5550;font-size:14px;">正在跟随 ' + (character && character.name ? character.name : '主角') + ' 的生活...</div>';
     return;
   }
   let currentDay = 0;
@@ -2320,6 +2790,49 @@ function renderFeed() {
     }
     const imgHtml = ev.image ? `<img class="card-img show" src="${ev.image}" alt="" onclick="openLightbox(this.src)">` : '';
     const savedClass = gameState.fragments.find(f => f.id === ev.id) ? 'saved' : '';
+
+    // 幕后面板HTML
+    let contextHtml = '';
+    if (ev.context) {
+      const isOpen = ev._contextOpen ? 'open' : '';
+      let sections = '';
+      if (ev.context.history) {
+        sections += `<div class="context-section ctx-history"><div class="ctx-label">⏳ 历史同步</div>${ev.context.history}</div>`;
+      }
+      if (ev.context.parallels && ev.context.parallels.length > 0) {
+        let items = ev.context.parallels.map(p => {
+          const avatar = p.name ? p.name.charAt(0) : '?';
+          return `<div class="parallel-item"><div class="parallel-avatar">${avatar}</div><div class="parallel-info"><div class="parallel-name">${p.name}${p.role ? ' · ' + p.role : ''}</div><div class="parallel-doing">${p.doing}</div></div></div>`;
+        }).join('');
+        sections += `<div class="context-section ctx-parallels"><div class="ctx-label">👥 平行人生</div>${items}</div>`;
+      }
+      if (ev.context.location) {
+        sections += `<div class="context-section ctx-location"><div class="ctx-label">📍 ${ev.context.location}</div></div>`;
+      }
+      contextHtml = `
+        <button class="context-toggle ${isOpen}" onclick="toggleContext('${ev.id}', event)">
+          展开幕后 <span class="arrow">▼</span>
+        </button>
+        <div class="context-panel ${isOpen}">${sections}</div>
+      `;
+    }
+
+    // 结局入口卡片
+    if (ev.type === 'ending') {
+      html += `
+        <div class="event-card type-ending" onclick="showEnding()" style="cursor:pointer;border:1px solid #D4A84B33;background:linear-gradient(135deg,rgba(212,168,75,0.08),rgba(212,168,75,0.02));">
+          <div class="timeline-dot" style="background:#D4A84B;"></div>
+          <div class="timeline-line"></div>
+          <div class="card-body" style="text-align:center;padding:24px 16px;">
+            <div style="width:48px;height:48px;margin:0 auto 10px;border:2px solid #D4A84B;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#D4A84B;font-size:13px;font-weight:700;letter-spacing:1px;">END</div>
+            <h4 style="color:#D4A84B;margin-bottom:6px;">${ev.title}</h4>
+            <p style="color:#9A9590;font-size:13px;margin:0;">${ev.content}</p>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
     html += `
       <div class="event-card type-${ev.type}">
         <div class="timeline-dot"></div>
@@ -2333,11 +2846,20 @@ function renderFeed() {
           <h4>${ev.title}</h4>
           <p>${ev.content}</p>
           <div class="date">${ev.date}</div>
+          ${contextHtml}
         </div>
       </div>
     `;
   });
   list.innerHTML = html;
+}
+
+function toggleContext(eventId, e) {
+  e.stopPropagation();
+  const ev = gameState.events.find(e => e.id === eventId);
+  if (!ev || !ev.context) return;
+  ev._contextOpen = !ev._contextOpen;
+  renderFeed();
 }
 
 function toggleSave(eventId, e) {
@@ -2351,13 +2873,6 @@ function toggleSave(eventId, e) {
   }
   renderFeed();
   if (gameState.currentTab === 'fragments') renderFragments();
-}
-
-function switchTab(tab) {
-  // Tab 栏已简化，始终显示 feed
-  gameState.currentTab = 'feed';
-  document.getElementById('feedView').style.display = 'block';
-  renderFeed();
 }
 
 function renderLetters() {
@@ -2498,6 +3013,12 @@ function showEnding() {
   showPage('page-ending');
 }
 
+function goBackToCover() {
+  document.body.classList.remove('war-mode');
+  showPage('page-cover');
+  renderCover();
+}
+
 function restart() {
   document.body.classList.remove('war-mode');
   // 如果从自定义故事返回，恢复原版角色数据
@@ -2505,7 +3026,8 @@ function restart() {
     character = JSON.parse(JSON.stringify(ORIGINAL_CHARACTER));
     window.currentCustomStory = null;
   }
-  showPage('page-home');
+  // 回到故事封面页
+  goBackToCover();
 }
 
 function openLightbox(src) {
@@ -2519,30 +3041,41 @@ function closeLightbox() {
 }
 
 // 互动按钮
-let likeCount = 128;
-let commentCount = 32;
-let isCollected = false;
-function doLike() {
-  likeCount++;
-  document.getElementById('likeCount').textContent = likeCount;
-  const btn = document.getElementById('likeBtn');
-  btn.style.color = '#E8A838';
-  setTimeout(() => btn.style.color = '', 500);
-}
-function doShare() {
-  showToast('已复制直播间链接到剪贴板！', 'success');
-}
-function doComment() {
-  commentCount++;
-  document.getElementById('commentCount').textContent = commentCount;
-  showToast('评论功能即将上线，敬请期待！', 'info');
-}
-function doCollect() {
-  isCollected = !isCollected;
-  const btn = document.getElementById('collectBtn');
-  btn.innerHTML = isCollected ? '⭐ <span style=\'color:#E8A838\'>已收藏</span>' : '⭐ 收藏';
-}
+// ===== 页面初始化：展示故事封面 + 接入竖滑手势 =====
+(function() {
+  initSwipeDetection();
+  // 默认展示第一个故事封面
+  renderCover();
+})();
 </script>
+<!-- 个人页 -->
+<div id="page-profile">
+  <div class="profile-header">
+    <div class="profile-avatar">🎭</div>
+    <div class="profile-name">我的故事</div>
+    <div class="profile-count" id="profileCount">暂无已创建的故事</div>
+  </div>
+  <div class="profile-story-list" id="profileStoryList">
+    <div class="profile-empty">
+      你还没有创建过自定义故事<br>
+      点击底部 <span style="color:#D4A84B;">+</span> 开始创建
+    </div>
+  </div>
+</div>
+
+<!-- 底部导航栏 -->
+<div class="bottom-nav" id="bottomNav">
+  <div class="nav-item active" data-tab="home" onclick="restart()">
+    <span class="nav-label">首页</span>
+  </div>
+  <div class="nav-item nav-plus" data-tab="create" onclick="switchTab('create')">
+    <span class="nav-label">+</span>
+  </div>
+  <div class="nav-item" data-tab="profile" onclick="switchTab('profile')">
+    <span class="nav-label">我</span>
+  </div>
+</div>
+
 <!-- Toast 提示容器 -->
 <div class="toast-container" id="toastContainer"></div>
 
