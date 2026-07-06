@@ -1559,7 +1559,7 @@ const YOUTH_CHARACTER = {
   }
 };
 
-let gameState = {
+var gameState = {
   currentDay: 0,
   events: [],
   letters: [],
@@ -1570,14 +1570,18 @@ let gameState = {
   dayPlayed: false,
   storyType: 'disaster'
 };
+window.gameState = gameState;
 
 // ===== 故事队列（抖音式竖滑切换） =====
-let storyQueue = [
+var storyQueue = [
   { id: 'original', name: '天宝十四载 · 长安', type: 'preset', color: '#D46A4A', cover: 'images/cover_changan.jpg', tag: '历史' },
   { id: 'youth', name: '2007年8月 · 齐齐哈尔', type: 'preset', color: '#7BAE7F', cover: 'images/youth_cover.jpg', tag: '青春' }
 ];
-let currentStoryIndex = 0;
-let userStories = [];
+window.storyQueue = storyQueue;
+var currentStoryIndex = 0;
+window.currentStoryIndex = currentStoryIndex;
+var userStories = [];
+window.userStories = userStories;
 let _swipeStartY = 0;
 let _swipeStartTime = 0;
 
@@ -1659,7 +1663,7 @@ function activateStory(storyId, charData) {
       fate: Math.random() > 0.5 ? 'die' : 'live',
       isPlaying: false,
       dayPlayed: false,
-      customStory: false,
+      customStory: storyId.startsWith('user_') || storyId.startsWith('room_') || storyId === 'custom',
       storyType: 'disaster'
     };
     if (charData && charData.storyType) {
@@ -1733,9 +1737,13 @@ function enterStory() {
     } else if (story.id === 'youth') {
       charData = JSON.parse(JSON.stringify(YOUTH_CHARACTER));
     }
+    window.currentCustomStory = null;
   } else if (story.type === 'user') {
     const userStory = userStories[story.idx];
-    if (userStory) charData = buildCustomCharacter(userStory);
+    if (userStory) {
+      charData = buildCustomCharacter(userStory);
+      window.currentCustomStory = userStory;  // 关键修复：设置正确的自定义故事数据
+    }
   }
 
   if (!charData) return;
@@ -2550,6 +2558,8 @@ function enterCustomRoom(story) {
   const charData = buildCustomCharacter(story);
   if (!charData) { showToast('故事数据解析失败', 'error'); return; }
   activateStory(story.id, charData);
+  gameState.customStory = true;  // 双保险：确保标记为自定义故事
+  window.gameState = gameState;
 
   // 清空 feed
   document.getElementById('feedList').innerHTML = '<div style="text-align:center;padding:60px 20px;color:#5A5550;font-size:14px;">正在跟随 ' + charData.name + ' 的生活...</div>';
@@ -2965,43 +2975,57 @@ function submitLetter() {
 function showEnding() {
   const activeId = window.storyEngine.activeId;
 
-  // 自定义故事的结局处理
-  if (gameState.customStory && window.currentCustomStory) {
-    const story = window.currentCustomStory;
-    const endKey = gameState.fate;
-    const endData = story.ending[endKey];
-    if (!endData) {
-      showToast('结局数据缺失', 'error');
-      return;
+  // === 自定义故事的结局处理 ===
+  if (gameState.customStory || window.currentCustomStory) {
+    // 确保标记正确
+    gameState.customStory = true;
+    window.gameState = gameState;
+
+    // 获取自定义故事数据，优先用 window.currentCustomStory
+    let storyData = window.currentCustomStory;
+
+    // 兜底：如果 currentCustomStory 丢失，尝试根据 activeId 从 userStories 找回
+    if (!storyData && window.userStories) {
+      const idx = window.storyEngine.activeId
+        ? parseInt(window.storyEngine.activeId.replace('user_', ''))
+        : -1;
+      if (idx >= 0 && window.userStories[idx]) {
+        storyData = window.userStories[idx];
+        window.currentCustomStory = storyData;
+      }
     }
-    const cardClass = endKey === 'die' ? 'die' : 'live';
-    const icon = '✦';
-    let label;
-    if (gameState.storyType === 'joy') {
-      label = endKey === 'die' ? '遗憾' : '圆满';
-    } else {
-      label = endKey === 'die' ? '陨落' : '存活';
+
+    // 确认有自定义故事数据
+    if (storyData && storyData.ending) {
+      const endKey = gameState.fate;
+      const endData = storyData.ending[endKey];
+      if (endData) {
+        const cardClass = endKey === 'die' ? 'die' : 'live';
+        const label = gameState.storyType === 'joy'
+          ? (endKey === 'die' ? '遗憾' : '圆满')
+          : (endKey === 'die' ? '陨落' : '存活');
+        document.getElementById('endingCard').className = 'ending-card ' + cardClass;
+        document.getElementById('fateIcon').textContent = '✦';
+        document.getElementById('fateLabel').textContent = label;
+        document.getElementById('endingTitle').textContent = endData.title || '故事结束';
+        document.getElementById('endingStory').textContent = (endData.title ? endData.title + '\n\n' : '') + (endData.text || '');
+        document.getElementById('endingImg').style.display = 'none';
+        const revealDiv = document.querySelector('.reveal');
+        if (revealDiv && storyData.meta) {
+          revealDiv.innerHTML =
+            '<h4>你刚刚经历的是</h4>' +
+            '<div class="event-name">' + (storyData.meta.title || storyData.meta.time + '·' + storyData.meta.location) + '</div>' +
+            '<div class="quote">' + (storyData.meta.subtitle || '') + '</div>' +
+            '<div class="impact">' + (storyData.meta.event_summary || '') + '</div>';
+        }
+        showPage('page-ending');
+        return;
+      }
     }
-    document.getElementById('endingCard').className = 'ending-card ' + cardClass;
-    document.getElementById('fateIcon').textContent = icon;
-    document.getElementById('fateLabel').textContent = label;
-    document.getElementById('endingTitle').textContent = endData.title || '故事结束';
-    document.getElementById('endingStory').textContent = (endData.title ? endData.title + '\n\n' : '') + (endData.text || '');
-    document.getElementById('endingImg').style.display = 'none';
-    const revealDiv = document.querySelector('.reveal');
-    if (revealDiv) {
-      const meta = story.meta;
-      revealDiv.innerHTML =
-        '<h4>你刚刚经历的是</h4>' +
-        '<div class="event-name">' + (meta.title || meta.time + '·' + meta.location) + '</div>' +
-        '<div class="quote">' + (meta.subtitle || '') + '</div>' +
-        '<div class="impact">' + (meta.event_summary || '') + '</div>';
-    }
-    showPage('page-ending');
-    return;
+    // 自定义故事数据处理失败，fallthrough 到预设故事分支
   }
 
-  // 预设故事的结局处理
+  // === 预设故事的结局处理 ===
   if (!character || !character.endings) {
     showToast('结局数据缺失', 'error');
     return;
