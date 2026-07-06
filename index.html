@@ -1769,8 +1769,10 @@ function showPage(pageId) {
     p.classList.remove('active');
     p.style.display = '';
   });
-  if (document.getElementById(pageId)) {
-    document.getElementById(pageId).classList.add('active');
+  const target = document.getElementById(pageId);
+  if (target) {
+    target.classList.add('active');
+    target.style.display = 'block';
   }
   window.scrollTo(0,0);
 }
@@ -1864,7 +1866,10 @@ function loadUserStory(idx) {
   }
   currentStoryIndex = storyQueue.length - 1;
   // 自动开始
-  setTimeout(() => { if (gameState.currentDay === 0 && !gameState.isPlaying) advanceDay(); }, 500);
+  const state = gameState;
+  const char = character;
+  const storyId = story.id;
+  setTimeout(() => { if (state.currentDay === 0 && !state.isPlaying) advanceDayFor(state, char, storyId); }, 500);
 }
 
 // ===== 竖滑手势切换封面 =====
@@ -2603,7 +2608,7 @@ function advanceDayFor(state, char, storyId) {
   if (state.dayPlayed) {
     state.currentDay++;
     state.dayPlayed = false;
-    if (state.currentDay === 5 && window.storyEngine.activeId === storyId) {
+    if (state.currentDay === 5 && window.storyEngine.activeId === storyId && window.storyEngine.activeId === 'original') {
       triggerWarTransition();
     }
   } else if (state.currentDay === 0) {
@@ -2943,7 +2948,7 @@ function closeLetterModal(e) { if (!e || e.target.id === 'letterModal') document
 function submitLetter() {
   const content = document.getElementById('letterContent').value.trim();
   if (!content) { showToast('写点什么吧', 'warning'); return; }
-  const dateStr = getDateByDay(gameState.currentDay);
+  const dateStr = getDateByDay(gameState.currentDay, gameState);
   const letterEvent = {
     type: 'letter', title: '写了一封家书', content: content,
     day: gameState.currentDay, date: dateStr, order: 99,
@@ -2958,13 +2963,19 @@ function submitLetter() {
 }
 
 function showEnding() {
+  const activeId = window.storyEngine.activeId;
+
   // 自定义故事的结局处理
   if (gameState.customStory && window.currentCustomStory) {
     const story = window.currentCustomStory;
     const endKey = gameState.fate;
     const endData = story.ending[endKey];
+    if (!endData) {
+      showToast('结局数据缺失', 'error');
+      return;
+    }
     const cardClass = endKey === 'die' ? 'die' : 'live';
-    const icon = endKey === 'die' ? '✦' : '✦';
+    const icon = '✦';
     let label;
     if (gameState.storyType === 'joy') {
       label = endKey === 'die' ? '遗憾' : '圆满';
@@ -2974,10 +2985,9 @@ function showEnding() {
     document.getElementById('endingCard').className = 'ending-card ' + cardClass;
     document.getElementById('fateIcon').textContent = icon;
     document.getElementById('fateLabel').textContent = label;
-    document.getElementById('endingTitle').textContent = endData.title;
-    document.getElementById('endingStory').textContent = endData.text;
+    document.getElementById('endingTitle').textContent = endData.title || '故事结束';
+    document.getElementById('endingStory').textContent = (endData.title ? endData.title + '\n\n' : '') + (endData.text || '');
     document.getElementById('endingImg').style.display = 'none';
-    // 更新历史背景揭示区域
     const revealDiv = document.querySelector('.reveal');
     if (revealDiv) {
       const meta = story.meta;
@@ -2991,15 +3001,23 @@ function showEnding() {
     return;
   }
 
+  // 预设故事的结局处理
+  if (!character || !character.endings) {
+    showToast('结局数据缺失', 'error');
+    return;
+  }
   const ending = character.endings[gameState.fate];
+  if (!ending) {
+    showToast('结局数据缺失', 'error');
+    return;
+  }
   document.getElementById('endingCard').className = 'ending-card ' + ending.cardClass;
   document.getElementById('fateIcon').textContent = ending.icon;
   document.getElementById('fateLabel').textContent = ending.label;
   document.getElementById('endingTitle').textContent = ending.title;
   document.getElementById('endingStory').textContent = ending.story;
-  document.getElementById('endingImg').src = ending.image;
+  document.getElementById('endingImg').src = ending.image || '';
   document.getElementById('endingImg').style.display = ending.image ? 'block' : 'none';
-  // 更新历史背景揭示区域（支持预设故事）
   const revealDiv = document.querySelector('.reveal');
   if (revealDiv && character.reveal) {
     const r = character.reveal;
